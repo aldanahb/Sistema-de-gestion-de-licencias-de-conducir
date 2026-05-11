@@ -13,5 +13,5 @@ Proyecto para la materia "Métodos Ágiles para el Diseño de Software". El sist
 * Alta de usuarios.
 * Modificación de los datos de un usuario.
 
-Para este proyecto se aplicó la metodología SCRUM y se utilizó Java Spring Boot. Las interfaces se realizaron con HTML, CSS y JavaScript.
-Se presenta también el documento entregado al profesor, que explica cómo se fue aplicando la metodología.
+Para este proyecto se aplicó la metodología SCRUM y se utilizó Java Spring Boot. Las interfaces se realizaron con HTML, CSS y JavaScript. Para la base de datos se utilizó PostgreSQL.
+Se presenta también el documento entregado al profesor, que explica cómo se fue aplicando la metodología. 
