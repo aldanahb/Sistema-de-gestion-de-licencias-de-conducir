@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modificar Titular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .header-sfc {
+      width: 100vw;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(22,199,154,0.08);
+      padding: 18px 0 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 40px;
+      padding-left: 40px;
+    }
+    .header-sfc img {
+      height: 80px;
+      width: auto;
+    }
+    .form-card {
+      background: #fff;
+      padding: 32px 28px 32px 28px;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(22,199,154,0.10);
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h2 {
+      text-align: left;
+      color: #16c79a;
+      margin-bottom: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding-left: 0;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 18px;
+    }
+    .form-group label[for]::after {
+      content: '';
+    }
+    .form-group label[for].invalid::after {
+      content: '*';
+      color: red;
+      margin-left: 4px;
+    }
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+    .input-error {
+      border: 2px solid red !important;
+    }
+    .error-message {
+      color: red;
+      font-size: 13px;
+      display: none;
+      margin-top: 4px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .row .form-group {
+      flex: 1;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .checkbox-container label {
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .btn {
+      display: block;
+      margin: 30px auto 0;
+      background-color: #16c79a;
+      color: white;
+      padding: 12px 24px;
+      font-size: 15px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(22,199,154,0.08);
+    }
+    .btn:hover {
+      background-color: #13b088;
+      color: #fff;
+    }
+    /* Los banners quedan pero no se muestran */
+    #mensaje-exito, #mensaje-error {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-sfc">
+    <img src="/logo-sfc.png" alt="Santa Fe Capital Logo">
+  </div>
+  <div class="form-card">
+    <form id="modificarTitularForm"
+      method="post"
+      onsubmit="return enviarFormularioModificar(event)"
+      novalidate>
+
+  <h2>Modificar titular</h2>
+
+  <div id="mensaje-exito" class="alert alert-success"></div>
+  <div id="mensaje-error" class="alert alert-error"></div>
+
+  <div class="row">
+    <div class="form-group">
+        <label for="tipoDocumento" class="invalid">Tipo de documento</label>
+        <select id="tipoDocumento" name="tipoDocumento" disabled>
+        <option value="">Seleccione...</option>
+        <th:block th:each="tipo : ${T(com.gestionlicencias.gestionlicenciasconducir.model.TipoDocumento).values()}">
+            <option th:value="${tipo}" th:text="${tipo}" 
+                th:selected="${tipo} == ${titular.tipoDocumento}"></option>
+        </th:block>
+        </select>
+        <input type="hidden" name="tipoDocumento" th:value="${titular.tipoDocumento}" />
+    </div>
+
+    <div class="form-group">
+        <label for="documento" class="invalid">Número de documento</label>
+        <input type="text" id="documento" name="documento" maxlength="8" required readonly
+            th:value="${titular.documento}">
+    </div>
+</div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="apellido" class="invalid">Apellido/s</label>
+      <input type="text" id="apellido" name="apellido" maxlength="50" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="nombre" class="invalid">Nombre/s</label>
+      <input type="text" id="nombre" name="nombre" maxlength="50" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="fechaNacimiento" class="invalid">Fecha de nacimiento</label>
+      <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion" class="invalid">Dirección</label>
+      <input type="text" id="direccion" name="direccion" maxlength="100" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="grupoSanguineo" class="invalid">Grupo sanguíneo</label>
+      <select id="grupoSanguineo" name="grupoSanguineo" required>
+        <option value="">Seleccione...</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="AB">AB</option>
+        <option value="O">O</option>
+      </select>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="factorRH" class="invalid">Factor RH</label>
+      <select id="factorRH" name="factorRH" required>
+        <option value="">Seleccione...</option>
+        <option value="+">Positivo (+)</option>
+        <option value="-">Negativo (-)</option>
+      </select>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="checkbox-container">
+    <label for="donanteOrganos">Donante de órganos</label>
+    <input type="checkbox" id="donanteOrganos" name="donanteOrganos" />
+  </div>
+
+  <button class="btn" type="submit">Modificar titular</button>
+</form>
+  </div>
+<script th:inline="javascript">
+  window.titularData = {
+    tipoDocumento: /*[[${titular.tipoDocumento}]]*/ "",
+    documento: /*[[${titular.documento}]]*/ "",
+    nombre: /*[[${titular.nombre}]]*/ "",
+    apellido: /*[[${titular.apellido}]]*/ "",
+    fechaNacimiento: /*[[${#dates.format(titular.fechaNacimiento, 'yyyy-MM-dd')}]]*/ "",
+    direccion: /*[[${titular.direccion}]]*/ "",
+    grupoSanguineo: /*[[${titular.grupoSanguineo}]]*/ "",
+    factorRH: /*[[${titular.factorRH}]]*/ "",
+    donanteOrganos: /*[[${titular.donanteOrganos}]]*/ false
+  };
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.titularData) {
+      alert('Error: no se recibieron datos del titular');
+      return;
+    }
+    document.getElementById('tipoDocumento').value = window.titularData.tipoDocumento;
+    document.getElementById('documento').value = window.titularData.documento;
+    document.getElementById('nombre').value = window.titularData.nombre;
+    document.getElementById('apellido').value = window.titularData.apellido;
+    document.getElementById('fechaNacimiento').value = window.titularData.fechaNacimiento ? window.titularData.fechaNacimiento.split('T')[0] : '';
+    document.getElementById('direccion').value = window.titularData.direccion;
+    document.getElementById('grupoSanguineo').value = window.titularData.grupoSanguineo;
+    document.getElementById('factorRH').value = window.titularData.factorRH;
+    document.getElementById('donanteOrganos').checked = window.titularData.donanteOrganos;
+  });
+
+  async function enviarFormularioModificar(event) {
+    event.preventDefault();
+    if (!validarFormulario()) return false;
+
+    const tipoDocumento = document.getElementById('tipoDocumento').value;
+    const documento = document.getElementById('documento').value;
+
+    const formData = {
+      tipoDocumento: tipoDocumento,
+      documento: documento,
+      nombre: document.getElementById('nombre').value.trim(),
+      apellido: document.getElementById('apellido').value.trim(),
+      fechaNacimiento: document.getElementById('fechaNacimiento').value,
+      direccion: document.getElementById('direccion').value.trim(),
+      grupoSanguineo: document.getElementById('grupoSanguineo').value,
+      factorRH: document.getElementById('factorRH').value,
+      donanteOrganos: document.getElementById('donanteOrganos').checked
+    };
+
+    try {
+      const response = await fetch(`/api/titulares/modificar/${encodeURIComponent(tipoDocumento)}/${encodeURIComponent(documento)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        alert('Titular modificado correctamente.');
+        setTimeout(() => window.location.href = '/api/titulares/buscarTitulares', 2000);
+      } else {
+        let mensaje = 'Error al modificar titular.';
+        try {
+          const texto = await response.text();
+          if (texto) {
+            const error = JSON.parse(texto);
+            if (error.message) {
+              mensaje = error.message.split(',')[0];
+            } else {
+              mensaje = texto;
+            }
+          }
+        } catch {
+          // No se pudo parsear JSON
+        }
+        alert(mensaje);
+      }
+    } catch (err) {
+      alert('Error de red o servidor: ' + err.message);
+    }
+  }
+
+  function validarFormulario() {
+    const form = document.getElementById('modificarTitularForm');
+    const campos = form.querySelectorAll('input[required], select[required]');
+    let valido = true;
+
+    const regexSoloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/;
+
+    campos.forEach(campo => {
+        const label = campo.parentElement.querySelector('label');
+        const errorMsg = campo.parentElement.querySelector('.error-message');
+        const vacio = campo.tagName === 'SELECT' ? campo.value === '' : campo.value.trim() === '';
+        campo.classList.remove('input-error');
+        if (errorMsg) errorMsg.style.display = 'none';
+        if (label) label.classList.remove('invalid');
+
+        if (vacio) {
+        campo.classList.add('input-error');
+        if (errorMsg) errorMsg.style.display = 'block';
+        if (label) label.classList.add('invalid');
+        valido = false;
+        } else if ((campo.id === 'apellido' || campo.id === 'nombre') && !regexSoloLetras.test(campo.value.trim())) {
+        campo.classList.add('input-error');
+        if (errorMsg) {
+            errorMsg.textContent = 'Sólo se permiten letras y espacios.';
+            errorMsg.style.display = 'block';
+        }
+        if (label) label.classList.add('invalid');
+        valido = false;
+        } else {
+        // Restaurar mensaje por defecto si pasa validación
+        if (errorMsg) {
+            errorMsg.textContent = 'Este campo es obligatorio.';
+            errorMsg.style.display = 'none';
+        }
+        }
+    });
+
+    if (!valido) {
+        alert('Por favor, complete todos los campos obligatorios correctamente y use sólo letras en nombre y apellido.');
+    }
+    return valido;
+    }
+
+</script>
+</body>
+</html>

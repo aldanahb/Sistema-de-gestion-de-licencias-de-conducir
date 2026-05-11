@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alta de Titular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .header-sfc {
+      width: 100vw;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(22,199,154,0.08);
+      padding: 18px 0 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 40px;
+      padding-left: 40px;
+    }
+    .header-sfc img {
+      height: 80px;
+      width: auto;
+    }
+    .form-card {
+      background: #fff;
+      padding: 32px 28px 32px 28px;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(22,199,154,0.10);
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h2 {
+      text-align: left;
+      color: #16c79a;
+      margin-bottom: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding-left: 0;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 18px;
+    }
+    .form-group label[for]::after {
+      content: '';
+    }
+    .form-group label[for].invalid::after {
+      content: '*';
+      color: red;
+      margin-left: 4px;
+    }
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+    .input-error {
+      border: 2px solid red !important;
+    }
+    .error-message {
+      color: red;
+      font-size: 13px;
+      display: none;
+      margin-top: 4px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .row .form-group {
+      flex: 1;
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .checkbox-container label {
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .btn {
+      display: block;
+      margin: 30px auto 0;
+      background-color: #16c79a;
+      color: white;
+      padding: 12px 24px;
+      font-size: 15px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(22,199,154,0.08);
+    }
+    .btn:hover {
+      background-color: #13b088;
+      color: #fff;
+    }
+    .alert {
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 15px;
+      position: relative;
+    }
+    .alert-success {
+      background-color: #e6f9f3;
+      color: #16c79a;
+      border: 1px solid #b2f2e5;
+    }
+    .alert-error {
+      background-color: #fff0f1;
+      color: #dc3545;
+      border: 1px solid #f5c6cb;
+    }
+    .alert .close-btn {
+      position: absolute;
+      right: 12px;
+      top: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-sfc">
+    <img src="/logo-sfc.png" alt="Santa Fe Capital Logo">
+  </div>
+  <div class="form-card">
+    <form id="altaTitularForm"
+      th:action="@{/api/titulares/registrar}"
+      method="post"
+      onsubmit="return enviarFormulario(event)"
+      novalidate>
+  <h2>Registrar un titular</h2>
+
+  <div th:if="${successMessage}" class="alert alert-success">
+    <span th:text="${successMessage}"></span>
+    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+  </div>
+
+  <div th:if="${errorMessage}" class="alert alert-error">
+    <span th:text="${errorMessage}"></span>
+    <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="tipoDocumento" class="invalid">Tipo de documento</label>
+      <select id="tipoDocumento" name="tipoDocumento" required>
+        <option value="">Seleccione...</option>
+        <th:block th:each="tipo : ${T(com.gestionlicencias.gestionlicenciasconducir.model.TipoDocumento).values()}">
+          <option th:value="${tipo}" th:text="${tipo}"></option>
+        </th:block>
+      </select>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="documento" class="invalid">Número de documento</label>
+      <input type="text" id="documento" name="documento" maxlength="8" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="apellido" class="invalid">Apellido/s</label>
+      <input type="text" id="apellido" name="apellido" maxlength="50" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="nombre" class="invalid">Nombre/s</label>
+      <input type="text" id="nombre" name="nombre" maxlength="50" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="fechaNacimiento" class="invalid">Fecha de nacimiento</label>
+      <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="direccion" class="invalid">Dirección</label>
+      <input type="text" id="direccion" name="direccion" maxlength="100" required>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group">
+      <label for="grupoSanguineo" class="invalid">Grupo sanguíneo</label>
+      <select id="grupoSanguineo" name="grupoSanguineo" required>
+        <option value="">Seleccione...</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="AB">AB</option>
+        <option value="O">O</option>
+      </select>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="factorRH" class="invalid">Factor RH</label>
+      <select id="factorRH" name="factorRH" required>
+        <option value="">Seleccione...</option>
+        <option value="+">Positivo (+)</option>
+        <option value="-">Negativo (-)</option>
+      </select>
+      <div class="error-message">Este campo es obligatorio.</div>
+    </div>
+  </div>
+
+  <div class="checkbox-container">
+    <label for="donanteOrganos">Donante de órganos</label>
+    <input type="checkbox" id="donanteOrganos" name="donanteOrganos" />
+  </div>
+
+  <button class="btn" type="submit">Registrar titular</button>
+</form>
+  </div>
+  <script>
+    async function enviarFormulario(event) {
+      event.preventDefault();
+      
+      if (!validarFormulario()) {
+        return false;
+      }
+
+      const formData = {
+        tipoDocumento: document.getElementById('tipoDocumento').value,
+        documento: document.getElementById('documento').value,
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        fechaNacimiento: document.getElementById('fechaNacimiento').value,
+        direccion: document.getElementById('direccion').value,
+        grupoSanguineo: document.getElementById('grupoSanguineo').value,
+        factorRH: document.getElementById('factorRH').value,
+        donanteOrganos: document.getElementById('donanteOrganos').checked
+      };
+
+      try {
+        const response = await fetch('/api/titulares/registrar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Titular registrado exitosamente');
+          window.location.href = '/api/titulares/registroTitular';
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Error al registrar el titular');
+        }
+      } catch (error) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-error';
+        errorDiv.innerHTML = `
+          <span>${error.message}</span>
+          <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+        `;
+        document.querySelector('.form-card').insertBefore(errorDiv, document.querySelector('h2'));
+      }
+    }
+
+    function validarFormulario() {
+      const form = document.getElementById('altaTitularForm');
+      const campos = form.querySelectorAll('input[required], select[required]');
+      let valido = true;
+      let tieneCamposVacios = false;
+
+      campos.forEach(campo => {
+        const label = campo.parentElement.querySelector('label');
+        const errorMsg = campo.parentElement.querySelector('.error-message');
+        const vacio = campo.tagName === 'SELECT' ? campo.value === '' : campo.value.trim() === '';
+        
+        campo.classList.remove('input-error');
+        if (errorMsg) errorMsg.style.display = 'none';
+        if (label) label.classList.remove('invalid');
+
+        if (vacio) {
+          campo.classList.add('input-error');
+          if (errorMsg) errorMsg.style.display = 'block';
+          if (label) label.classList.add('invalid');
+          tieneCamposVacios = true;
+          valido = false;
+          return;
+        }
+
+        const id = campo.id;
+        const valor = campo.value.trim();
+
+        if (id === 'numeroDocumento') {
+          const tipo = document.getElementById('tipoDocumento').value;
+
+          if (tipo === 'DNI' && !/^\d{8}$/.test(valor)) {
+            alert('El DNI debe tener exactamente 8 dígitos numéricos.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          } else if (tipo !== 'DNI' && !/^[a-zA-Z0-9]{8}$/.test(valor)) {
+            alert('El número de documento debe tener 8 caracteres alfanuméricos.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          }
+        }
+
+        if (id === 'nombre') {
+          if (valor.length > 50) {
+            alert('El nombre no puede superar los 50 caracteres.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(valor)) {
+            alert('El nombre sólo puede contener letras y espacios.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          }
+        }
+
+        if (id === 'apellido') {
+          if (valor.length > 50) {
+            alert('El apellido no puede superar los 50 caracteres.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(valor)) {
+            alert('El apellido sólo puede contener letras y espacios.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          }
+        }
+
+        if (id === 'direccion' && valor.length > 100) {
+          alert('La dirección no puede superar los 100 caracteres.');
+          campo.classList.add('input-error');
+          if (label) label.classList.add('invalid');
+          valido = false;
+        }
+
+        if (id === 'fechaNacimiento') {
+          const fechaNac = new Date(valor);
+          const hoy = new Date();
+          const edad = hoy.getFullYear() - fechaNac.getFullYear();
+          const mes = hoy.getMonth() - fechaNac.getMonth();
+          const dia = hoy.getDate() - fechaNac.getDate();
+
+          const tiene17 = edad > 17 || (edad === 17 && (mes > 0 || (mes === 0 && dia >= 0)));
+
+          if (!tiene17) {
+            alert('El titular debe tener al menos 17 años.');
+            campo.classList.add('input-error');
+            if (label) label.classList.add('invalid');
+            valido = false;
+          }
+        }
+      });
+
+      if (tieneCamposVacios) {
+        alert('Por favor, complete todos los campos obligatorios.');
+        return false;
+      }
+
+      if (!valido) {
+        return false;
+      }
+
+      return confirm('¿Está seguro de que desea registrar el titular?');
+    }
+  </script>
+</body>
+</html>

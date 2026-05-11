@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprobante de Trámite</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 2cm;
+    }
+
+    body {
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background-color: white;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .header-sfc {
+      width: 100vw;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(22,199,154,0.08);
+      padding: 18px 0 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 40px;
+    }
+    .header-sfc img {
+      height: 80px;
+      width: auto;
+    }
+
+    .comprobante {
+      max-width: 18cm;
+      margin: auto;
+      padding-top: 0; 
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 14px;
+      margin: 2px 0;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 10px;
+    }
+
+    .line {
+      margin: 8px 0;
+    }
+
+    .label {
+      display: inline-block;
+      width: 220px;
+      font-weight: bold;
+    }
+
+    .firma {
+      margin-top: 50px;
+    }
+
+    .firma .linea {
+      margin-top: 40px;
+      border-top: 1px solid #000;
+      width: 250px;
+    }
+
+    .firma p {
+      margin: 4px 0 0;
+    }
+
+    .print-button {
+      text-align: center;
+      margin: 40px 0 20px;
+    }
+
+    .print-button button {
+      display: block;
+      background-color: #16c79a;
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 15px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin: 0 auto;
+      margin-top: 20px;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(22,199,154,0.08);
+    }
+
+    .print-button button:hover {
+      background-color: #13b088;
+      color: #fff;
+    }
+
+    @media print {
+      .print-button {
+        display: none;
+      }
+
+      body {
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .comprobante {
+        padding-top: 0; 
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-sfc">
+    <img src="/logo-sfc.png" alt="Santa Fe Capital Logo">
+  </div>
+
+  <div class="comprobante">
+
+    <div class="header">
+      <img src="/logo-sfc.png" alt="Santa Fe Capital Logo" style="height: 40px; width: auto; filter: grayscale(100%);">
+      <h1>COMPROBANTE DE TRÁMITE: LICENCIA DE CONDUCIR</h1>
+      <p>Dirección General de Tránsito y Transporte</p>
+      <p>Municipalidad de Santa Fe</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Datos del titular</div>
+      <div class="line"><span class="label">Nombre/s y apellido/s:</span> <span th:text="${titular.nombre} + ' ' + ${titular.apellido}"></span></div>
+      <div class="line"><span class="label">Tipo de documento:</span> <span th:text="${titular.tipoDocumento}"></span></div>
+      <div class="line"><span class="label">Número de documento:</span> <span th:text="${titular.documento}"></span></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Datos de la licencia</div>
+      <div class="line"><span class="label">Clase de licencia:</span> <span th:text="${licencia.clase}"></span></div>
+      <div class="line"><span class="label">Fecha de emisión:</span> <span th:text="${licencia.fechaInicio}"></span></div>
+      <div class="line"><span class="label">Fecha de vencimiento:</span> <span th:text="${licencia.fechaVencimiento}"></span></div>
+      <div class="line"><span class="label">Observaciones:</span>
+        <span th:text="${licencia.observaciones != null && !#strings.isEmpty(licencia.observaciones) ? licencia.observaciones : 'Sin observaciones'}"></span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Datos del trámite</div>
+      <div class="line"><span class="label">Tipo de trámite:</span> <span th:text="${tramite.descripcion}"></span></div>
+      <div class="line"><span class="label">Costo del trámite:</span> <span th:text="${tramite.costo}"></span></div>
+    </div>
+
+    <div class="firma">
+      <p style="margin-bottom: 80px;">Emitido en fecha: <span th:text="${licencia.fechaInicio}"></span></p>
+      <div class="linea"></div>
+      <p>Firma y sello autorizado</p>
+    </div>
+
+  </div>
+
+  <div class="print-button">
+    <button onclick="window.print()">Imprimir comprobante</button>
+  </div>
+
+</body>
+</html>

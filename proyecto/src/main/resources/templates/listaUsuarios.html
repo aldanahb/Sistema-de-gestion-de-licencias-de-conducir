@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Buscar usuarios</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #fff;
+      margin: 0;
+      padding: 0 20px;
+    }
+    .header-sfc {
+      width: 100vw;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(22,199,154,0.08);
+      padding: 18px 40px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+    }
+    .header-sfc img {
+      height: 80px;
+    }
+    .form-card {
+      background: #fff;
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(22,199,154,0.10);
+      margin: 0 auto 40px auto;
+    }
+    h2 {
+      color: #16c79a;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
+    .form-group label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fdfdfd;
+    }
+    .btn {
+      background-color: #16c79a;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn:hover:not(:disabled) {
+      background-color: #13b088;
+    }
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      word-break: break-word;
+    }
+    th {
+      background-color: #e6f9f3;
+      color: #16c79a;
+    }
+    tr.selected-row {
+      background-color: #c7f0e6;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+      justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-sfc">
+    <img src="/logo-sfc.png" alt="Santa Fe Capital Logo" />
+  </div>
+
+  <div class="form-card">
+    <h2>Buscar usuarios</h2>
+
+    <form id="form-busqueda" onsubmit="buscarUsuarios(event)">
+      <div class="row mb-3">
+        <div class="col-md-4 form-group">
+          <label for="tipoDocumento">Tipo de documento</label>
+          <select id="tipoDocumento" name="tipoDocumento">
+            <option value="">Todos</option>
+            <th:block th:each="tipo : ${T(com.gestionlicencias.gestionlicenciasconducir.model.TipoDocumento).values()}">
+                <option th:value="${tipo}" th:text="${tipo}"></option>
+            </th:block>
+         </select>
+        </div>
+        <div class="col-md-4 form-group">
+          <label for="documento">Documento</label>
+          <input type="text" id="documento" name="documento" placeholder="Buscar por número de documento" />
+        </div>
+        <div class="col-md-4 form-group">
+          <label for="nombreUsuario">Nombre de usuario</label>
+          <input type="text" id="nombreUsuario" name="nombreUsuario" placeholder="Buscar por usuario" />
+        </div>
+      </div>
+      <button type="submit" class="btn">Buscar</button>
+    </form>
+
+    <table id="tabla-usuarios" style="display: none;">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Tipo Doc</th>
+          <th>Documento</th>
+          <th>Apellido</th>
+          <th>Nombre</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="action-buttons" id="botones-acciones">
+      <button type="button" class="btn" id="btnModificar" onclick="modificarUsuario()">Modificar usuario</button>
+    </div>
+  </div>
+
+  <script>
+    let usuarioSeleccionado = null;
+
+    async function buscarUsuarios(event) {
+      if (event) event.preventDefault();
+      usuarioSeleccionado = null;
+
+      const tipoDocumento = document.getElementById("tipoDocumento").value;
+      const documento = document.getElementById("documento").value;
+      const nombreUsuario = document.getElementById("nombreUsuario").value;
+
+      const params = new URLSearchParams();
+      if (tipoDocumento) params.append("tipoDocumento", tipoDocumento);
+      if (documento) params.append("documento", documento);
+      if (nombreUsuario) params.append("nombreUsuario", nombreUsuario);
+
+      try {
+        const response = await fetch(`/api/usuarios/buscar?${params.toString()}`);
+        if (!response.ok) throw new Error("Error al buscar usuarios");
+
+        const data = await response.json();
+        const tbody = document.querySelector("#tabla-usuarios tbody");
+        const tabla = document.getElementById("tabla-usuarios");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+          tabla.style.display = "none";
+          alert("No se encontraron usuarios.");
+          return;
+        }
+
+        tabla.style.display = "table";
+
+        data.forEach(u => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${u.nombreUsuario}</td>
+            <td>${u.tipoDocumento}</td>
+            <td>${u.documento}</td>
+            <td>${u.apellido}</td>
+            <td>${u.nombre}</td>
+          `;
+          row.addEventListener("click", () => {
+            document.querySelectorAll("#tabla-usuarios tbody tr").forEach(tr => tr.classList.remove("selected-row"));
+            row.classList.add("selected-row");
+            usuarioSeleccionado = u;
+          });
+          tbody.appendChild(row);
+        });
+
+      } catch (error) {
+        alert("Ocurrió un error al buscar usuarios: " + error.message);
+        console.error(error);
+      }
+    }
+
+    function modificarUsuario() {
+      if (!usuarioSeleccionado) {
+        alert("Por favor, seleccione un usuario.");
+        return;
+      }
+      const tipoDocumento = encodeURIComponent(usuarioSeleccionado.tipoDocumento);
+      const documento = encodeURIComponent(usuarioSeleccionado.documento);
+      const nombreUsuario = encodeURIComponent(usuarioSeleccionado.nombreUsuario);
+      window.location.href = `/api/usuarios/modificar/${tipoDocumento}/${documento}/${nombreUsuario}`;
+    }
+
+    window.addEventListener("load", () => {
+      buscarUsuarios(); // carga inicial sin parámetros
+    });
+  </script>
+</body>
+</html>

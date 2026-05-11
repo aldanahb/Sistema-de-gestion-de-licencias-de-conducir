@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Licencia de Conducir</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 2cm;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
+      background-color: white;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+
+    .licencia {
+      max-width: 18cm;
+      margin: auto;
+      padding-top: 40px;
+      border: 2px solid #000;
+      padding: 25px 40px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #000;
+      padding-bottom: 15px;
+      margin-bottom: 35px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      margin: 0;
+      letter-spacing: 2px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .header p {
+      font-size: 13px;
+      margin: 3px 0;
+      font-weight: 600;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      font-size: 16px;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 6px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .line {
+      margin: 10px 0;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .label {
+      flex: 0 0 220px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .value {
+      flex: 1;
+      border-bottom: 1px solid #000;
+      padding-left: 10px;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .footer {
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .footer .fecha {
+      font-weight: 600;
+    }
+
+    .firma {
+      border-top: 1.5px solid #000;
+      width: 260px;
+      text-align: center;
+      margin-top: 50px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding-top: 6px;
+    }
+
+    .print-button {
+      text-align: center;
+      margin: 40px 0 20px;
+    }
+
+    .print-button button {
+      display: block;
+      background-color: #16c79a;
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 15px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      margin: 0 auto;
+      margin-top: 20px;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      box-shadow: 0 1px 4px rgba(22,199,154,0.08);
+    }
+    .print-button button:hover {
+      background-color: #13b088;
+      color: #fff;
+    }
+
+    @media print {
+      .print-button {
+        display: none;
+      }
+
+      body {
+        margin: 0;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .licencia {
+        padding-top: 0;
+        border: none;
+        max-width: 100%;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="licencia">
+  <div class="header">
+    <h1>Licencia de Conducir</h1>
+    <p>Dirección General de Tránsito y Transporte</p>
+    <p>Municipalidad de Santa Fe</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Datos del titular</div>
+    <div class="line">
+      <span class="label">Nombre/s y apellido/s:</span>
+      <span class="value" th:text="${titular.nombre} + ' ' + ${titular.apellido}"></span>
+    </div>
+    <div class="line">
+      <span class="label">Tipo de documento:</span>
+      <span class="value" th:text="${titular.tipoDocumento}"></span>
+    </div>
+    <div class="line">
+      <span class="label">Número de documento:</span>
+      <span class="value" th:text="${titular.documento}"></span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Datos de la licencia</div>
+    <div class="line">
+      <span class="label">Clase de licencia:</span>
+      <span class="value" th:text="${licencia.clase}"></span>
+    </div>
+    <div class="line">
+      <span class="label">Fecha de emisión:</span>
+      <span class="value" th:text="${licencia.fechaInicio}"></span>
+    </div>
+    <div class="line">
+      <span class="label">Fecha de vencimiento:</span>
+      <span class="value" th:text="${licencia.fechaVencimiento}"></span>
+    </div>
+    <div class="line">
+      <span class="label">Observaciones:</span>
+      <span class="value" th:text="${licencia.observaciones != null && !#strings.isEmpty(licencia.observaciones) ? licencia.observaciones : 'Sin observaciones'}"></span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="fecha">Emitido en fecha: <span th:text="${licencia.fechaInicio}"></span></div>
+    <div class="firma">Firma y sello autorizado</div>
+  </div>
+</div>
+
+<div class="print-button">
+  <button onclick="window.print()">Imprimir licencia</button>
+</div>
+
+</body>
+</html>
